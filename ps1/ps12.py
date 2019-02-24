@@ -21,25 +21,30 @@ def shortCorpus(barK,truP):
     barK=  re.search(r'(?<= that you work)(.*)(?=respect)',barK).group(1)
     barK= appStart+ barK + appEnd 
     truP=  re.search(r'(?<= that you work)(.*)(?=respect)',truP).group(1)
-    truP= appStart+ truP + appEnd 
+    truP= appStart+ truP + appEnd
+    barK = re.sub(r'[^\w]', ' ', barK)
+    truP= re.sub(r'[^\w]', ' ', truP)
     dist =edit_distance(barK,truP)
-    
-    #barK=re.split(r' ', barK)
-    #barK=re.split(r'[ \t\n]+', barK) 
-    #Tokenization
-    
+
     barK=barK.split(' ')
     barkStr=[wnl.lemmatize(w) for w in barK]
-    setbarkStr=set(barkStr)
+    setbarkStr=list(set(barkStr))
+    setbarkStr=setbarkStr[1:]
     print(setbarkStr)
-    
+
     truP=truP.split(' ')
     trupStr=[wnl.lemmatize(w) for w in truP]
-    settrupStr=set(trupStr)
+    settrupStr=list(set(trupStr))
+    settrupStr=settrupStr[1:]
+    lenBarack=setbarkStr.__len__()
+    lenTrump=settrupStr.__len__()
+    setbarkStr=set(setbarkStr)
+    settrupStr=set(settrupStr)
     print(settrupStr)
-    diffString= settrupStr & setbarkStr
-    print(diffString)
-    
+    print('Total words in Barack=%d and in Trump=%d'%(lenBarack,lenTrump))
+    sameString= settrupStr & setbarkStr
+    print(sameString)
+    print("Length of same words=%d" %(sameString.__len__()))
     return dist
     
     
@@ -47,8 +52,8 @@ if __name__== "__main__":
     """
     Main function
     """
-    barack=open('/home/krishna/Desktop/barack.txt','r').read()
-    trump=open('/home/krishna/Desktop/trump.txt','r').read()
+    barack=open('barack.txt','r').read()
+    trump=open('trump.txt','r').read()
     returnDistance= calEditDistance(barack,trump)
     print("Full Paragraph Differece= {}".format(returnDistance))
     shortDistance=shortCorpus(barack,trump)
