@@ -2,11 +2,11 @@ import re
 import nltk
 import pandas as pd
 from bs4 import BeautifulSoup
-from nltk.collocations import *
+from nltk.corpus import stopwords
 
 def readingCsvFile():
 
-    df=pd.read_csv('~/Desktop/NLP/ps1/amazon-fine-food-reviews/Reviews.csv',encoding='utf-8')
+    df=pd.read_csv('~/Desktop/NLP/ps1/Reviews.csv',encoding='utf-8')
     textColumn=[]
     df=df[:10000]
     for row in df.itertuples():
@@ -21,25 +21,41 @@ def readingCsvFile():
 def wordTokenization(finalText):
 
     tokenText=nltk.word_tokenize(finalText)
-    print(tokenText.__len__())
     freqWords = nltk.FreqDist(tokenText)
-    # for w , k in freqWords.items():
-    #     print(w,k)
-    #     if k=='the':
-    #         break
-    print(freqWords.most_common(10))
-    #print(freqWords.hapaxes())
-
+    print('Unigram Words= %d'%freqWords.N())
+    print('Length of unique words=%d'%len(freqWords.hapaxes()))
     return tokenText
 
 def collocationCalculation(tokenWords):
     bigram_measures = nltk.collocations.BigramAssocMeasures()
     word_fd=nltk.FreqDist(tokenWords)
     bigram_fd= nltk.FreqDist(nltk.bigrams(tokenWords))
-    finder=nltk.BigramCollocationFinder(word_fd,bigram_fd,window_size=4)
+    adjacent=nltk.BigramCollocationFinder(word_fd,bigram_fd,window_size=4)
+    print('Count of 2-word adjacents and non-adjacents = %d'%len(adjacent.score_ngrams(bigram_measures.raw_freq)))
 
-    collText=nltk.collocations(tokenWords)
-    print(collText)
+
+def stopWordsToFilter(tokenWords):
+    bigram_measures = nltk.collocations.BigramAssocMeasures()
+    stoplist = stopwords.words('english')
+    finder = nltk.BigramCollocationFinder.from_words(tokenWords)
+    print('Length before filtering=%d'%len(finder.score_ngrams(bigram_measures.raw_freq)))
+    finder.apply_word_filter(lambda w: w in stoplist)
+    print('Length after filtering=%d' % len(finder.score_ngrams(bigram_measures.raw_freq)))
+
+def pointWiseMutualInformation(tokenWords):
+    bigram_measures = nltk.collocations.BigramAssocMeasures()
+    finder = nltk.BigramCollocationFinder.from_words(tokenWords)
+    collList=[]
+    for find in finder.score_ngrams(bigram_measures.pmi):
+
+        if find[1]>=2:
+            collList.append(find)
+
+    print('Five good collocations=')
+    print(collList[:5])
+
+    print('Two not so good collocations=')
+    print(collList[-2:])
 
 
 
@@ -48,3 +64,5 @@ if __name__=='__main__':
     finalText = readingCsvFile()
     tokenWords=wordTokenization(finalText)
     collocationCalculation(tokenWords)
+    stopWordsToFilter(tokenWords)
+    pointWiseMutualInformation(tokenWords)
