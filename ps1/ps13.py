@@ -30,9 +30,12 @@ def wordTokenize(raw):
 def frequencyDistribution(tokenWords):
     freqWords= FreqDist(tokenWords)
     print(freqWords.most_common(10))
-    print(freqWords.hapaxes())
+    #print(freqWords.hapaxes())
+    typeWords=freqWords.hapaxes()
     pt.plot()
     freqWords.plot(30, cumulative=True)
+    pt.close()
+    return typeWords
 
 def longestWordforms(tokenWords):
     typeWords=list(set(tokenWords))
@@ -53,6 +56,7 @@ def uniqueWord(tokenWords,typeLen):
     wordCount=Counter(tokenWords)
     uniqWords=[word for word, count in wordCount.items() if count == 1]
     print('Percentage of unique words =%f'%(((typeLen-uniqWords.__len__())/typeLen)*100))
+    return uniqWords
 
 def meanMedainStd(tokenWords):
     lenWords=[len(w) for w in tokenWords]
@@ -61,10 +65,10 @@ def meanMedainStd(tokenWords):
     stdDev= statistics.stdev(lenWords)
     print( 'Mean =%f Median=%f Standard Deviation=%f'%(mean,median,stdDev))
 
-def unknownWords(tokenWords):
+def unknownWords(typeWords):
     wordList=list(w.lower() for w in nltk.corpus.words.words())
     unkList=[]
-    for w in tokenWords:
+    for w in typeWords:
         indicator=0
         for word in wordList:
             if w==word:
@@ -73,6 +77,7 @@ def unknownWords(tokenWords):
         if indicator==0:
             unkList.append(w)
 
+    print('unknown words=\n')
     print(unkList)
 
 
@@ -83,11 +88,11 @@ if __name__=='__main__':
     raw = response.read().decode('utf8')
     rawReturn = removeTag(raw)
     tokenWords = wordTokenize(rawReturn)
-    #frequencyDistribution(tokenWords)
+    typeWords=frequencyDistribution(tokenWords)
     typeLen=longestWordforms(tokenWords)
     uniqueWord(tokenWords,typeLen)
     meanMedainStd(tokenWords)
-    unknownWords(tokenWords)
+    unknownWords(typeWords)
 
 
 
