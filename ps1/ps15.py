@@ -35,27 +35,93 @@ def soundexAlgo(name):
     noVowelName=[]
 
     if len(name)==1:
-        string='000'
-        return name[0]+string
+        return name[0].upper()+'000'
+    elif len(name)==2:
+        indicator = 0
 
-    for ch in name:
-        indi = 0
-        for vow in vowel:
-            if ch==vow:
-                indi =1
-                break
-        if indi==0:
-            noVowelName.append(ch)
-    noConso=[]
-    noConso.append(noVowelName[0])
-    for letter in noVowelName[1:]:
-        for key,value in dictLetter.items():
+        for key, value in dictLetter.items():
             for v in value:
-                if letter==v:
-                    noConso.append(key)
+                if name[1] == v:
+                    indicator = 1
                     break
+        if indicator == 0:
+                key = '0'
 
-    print(noConso)
+        return name[0].upper()+key+'00'
+    else:
+    #step 3
+        #which category of dictionary each letter belongs to
+        matchLen =[]
+        for char in name:
+            indicator=0
+            for key,value in dictLetter.items():
+                for v in value:
+                    if char==v:
+                        matchLen.append(key)
+                        indicator=1
+                        break
+            if indicator==0:
+                if char=='h' or char =='w':
+                    key='9'
+                else:
+                    key='0'
+                matchLen.append(key)
+
+
+
+        # same character number includes h and w character's inbetween
+        indMatch = []
+
+        for indx in range(1, len(matchLen) - 2):
+
+            if matchLen[indx] == '0' or matchLen[indx] == '9':
+                continue
+
+            else:
+
+                if matchLen[indx] == matchLen[indx + 2] and matchLen[indx] =='9':
+                    indMatch.append(indx + 2)
+
+        matchLen = [v for i, v in enumerate(matchLen) if i not in frozenset(indMatch)]
+
+
+
+        #same adjacent character's position calculation
+        indMatch = []
+
+        for indx in range (0,len (matchLen)-2):
+
+            if matchLen[indx]=='0' or matchLen[indx]=='9':
+                continue
+
+            else:
+
+                if matchLen[indx]==matchLen[indx+1]:
+                    indMatch.append(indx+1)
+
+        matchLen = [v for i, v in enumerate(matchLen) if i not in frozenset(indMatch)]
+
+        finalVal=[]
+        appendList=[]
+        for val in matchLen:
+            if val!='0' and val !='9':
+                finalVal.append(val)
+
+        if name[0] not in vowel:
+            finalVal = finalVal[1:]
+        if finalVal.__len__() >=3:
+            appendList=finalVal[0:3]
+            addList= ''.join(appendList)
+            soundexWord=name[0].upper()+addList
+        else:
+            appendList=finalVal
+            while len(appendList)<3:
+                appendList.append('0')
+            addList = ''.join(appendList)
+
+            soundexWord=name[0].upper()+addList
+
+        return soundexWord
 
 
 if __name__== '__main__':
@@ -71,6 +137,10 @@ if __name__== '__main__':
     # maxMatch(sentence,wordlist,result)
     # strResult = ''.join(str(w +' ') for w in result)
     # print(strResult)
-    amePresident=['donald','kamala','hillary']
+    amePresident=['ab','kamala','hillary']
+    preSoundex=[]
     for item in amePresident:
-        soundexAlgo(item)
+        temp=soundexAlgo(item)
+        preSoundex.append(temp)
+
+    print(preSoundex)
