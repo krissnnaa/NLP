@@ -46,7 +46,7 @@ if __name__== "__main__":
     """
     Main function to call list and regex 
     """
-    url='http://www.gutenberg.org/files/219/219.txt' #sys.argv[1]
+    url= sys.argv[1] #'http://www.gutenberg.org/files/219/219.txt'
     response= request.urlopen(url)
     raw = response.read().decode('utf8')
     listCompression(raw)

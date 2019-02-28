@@ -1,5 +1,5 @@
 import nltk
-import re
+import sys
 from matplotlib import pyplot as pt
 from bs4 import BeautifulSoup
 from urllib import request
@@ -79,7 +79,7 @@ def unknownWords(tokenWords):
 
 if __name__=='__main__':
 
-    url = 'http://www.gutenberg.org/files/25990/25990-h/25990-h.htm'  # sys.argv[1]
+    url = sys.argv[1] # 'http://www.gutenberg.org/files/25990/25990-h/25990-h.htm'
     response = request.urlopen(url)
     raw = response.read().decode('utf8')
     rawReturn = removeTag(raw)

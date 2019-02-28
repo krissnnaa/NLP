@@ -125,22 +125,38 @@ def soundexAlgo(name):
 
 
 if __name__== '__main__':
-    # wordlist=words.words()
-    # sentence = open('barack.txt', 'r').read()
-    # appStart = 'that you work'
-    # appEnd = 'respect'
-    # barK = re.search(r'(?<= that you work)(.*)(?=respect)', sentence).group(1)
-    # sentence = appStart + barK + appEnd
-    # sentence= re.sub(r'[^\w]', ' ', sentence)
-    # sentence=sentence.replace(" ","")
-    # result=[]
-    # maxMatch(sentence,wordlist,result)
-    # strResult = ''.join(str(w +' ') for w in result)
-    # print(strResult)
-    amePresident=['ab','kamala','hillary']
+
+    #maxMatch Algorithm
+    wordlist=words.words()
+    sentence = open('barack.txt', 'r').read()
+    appStart = 'that you work'
+    appEnd = 'respect'
+    barK = re.search(r'(?<= that you work)(.*)(?=respect)', sentence).group(1)
+    sentence = appStart + barK + appEnd
+    sentence= re.sub(r'[^\w]', ' ', sentence)
+    sentence=sentence.replace(" ","")
+    result=[]
+    maxMatch(sentence,wordlist,result)
+    strResult = ''.join(str(w +' ') for w in result)
+    print("maxMatch Output=")
+    print(strResult)
+
+    #Soundex Algorithm
+    amePresident=['donald','kamala','hillary']
     preSoundex=[]
     for item in amePresident:
         temp=soundexAlgo(item)
         preSoundex.append(temp)
 
-    print(preSoundex)
+    print('2020 Presidents Soundex value')
+    for (item,value) in zip(amePresident,preSoundex):
+        print(item +':'+ value)
+    namePoliticians = ['narendra modi', 'kp oli', 'putin']
+    preSoundex = []
+    for item in namePoliticians:
+        temp = soundexAlgo(item)
+        preSoundex.append(temp)
+
+    print('Corresponding Soundex values for politicians')
+    for (item, value) in zip(namePoliticians, preSoundex):
+        print(item + ':' + value)

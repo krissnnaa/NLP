@@ -3,10 +3,11 @@ import nltk
 import pandas as pd
 from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
+import sys
 
-def readingCsvFile():
+def readingCsvFile(csvPath):
 
-    df=pd.read_csv('~/Desktop/NLP/ps1/Reviews.csv',encoding='utf-8')
+    df=pd.read_csv(csvPath,encoding='utf-8')
     textColumn=[]
     df=df[:10000]
     for row in df.itertuples():
@@ -60,7 +61,7 @@ def pointWiseMutualInformation(tokenWords):
 
 
 if __name__=='__main__':
-
+    csvPath = sys.argv[1]  # '~/NLP/ps1/Reviews.csv'
     finalText = readingCsvFile()
     tokenWords=wordTokenization(finalText)
     collocationCalculation(tokenWords)
