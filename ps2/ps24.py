@@ -195,7 +195,7 @@ def loglikelihoodComputation(trainDict):
 
         elif afterPos == 'IN' or afterPos == 'VBG':
             # fish
-            targetWord = 'bass' + ' ' + beforePos
+            targetWord = 'bass' + ' ' + afterPos
             for k, v in logLikeli.items():
                 if k == targetWord:
                     indx = 1
@@ -214,28 +214,47 @@ def sakeLogLiklihood(trainDict):
     logLikeli = {}
     for key, value in trainDict.items():
         keyTokens = nltk.word_tokenize(key)
-        riv = 0
-        fish = 0
-        guitar = 0
-        piano = 0
+        #these are for cause
+        national = 0
+        nation = 0
+        children = 0
+        unity = 0
+        country=0
+        stability=0
+        peace=0
+        people=0
+        #sake + IN =>INDERTERMINANAT
+        # these are for the beer
+        tablespoons=0
+        wine=0
+        cup=0
+        drink=0
+        bottle=0
+        sauce=0
+        #japanese +sake
+        #sake+NN => n+2 pos
+
         for val in keyTokens:
-            if val == 'fish':
-                fish = 1
+            if val == 'wine':
+                wine = 1
                 break
-            if val == 'river':
-                riv = 1
+            if val == 'cup':
+                cup = 1
                 break
-            if val == 'guitar':
-                guitar = 1
+            if val == 'tablespoons':
+                tablespoons = 1
                 break
-            if val == 'piano':
-                piano = 1
+            if val == 'bottle':
+                bottle = 1
                 break
-            if val == 'bass':
+            if val == 'drink':
+                drink = 1
+                break
+            if val == 'sake':
                 targetIndex = keyTokens.index(val)
                 break
-        # fish word
-        if fish == 1:
+        # wine word
+        if wine == 1:
             indx = 0
             for k, v in logLikeli.items():
                 if k == val:
@@ -244,8 +263,8 @@ def sakeLogLiklihood(trainDict):
                     break
             if indx == 0:
                 logLikeli[val] = 1
-        # river word
-        if riv == 1:
+        # bottle word
+        if bottle == 1:
             indx = 0
             for k, v in logLikeli.items():
                 if k == val:
@@ -254,19 +273,8 @@ def sakeLogLiklihood(trainDict):
                     break
             if indx == 0:
                 logLikeli[val] = 1
-        # guitar word
-        if guitar == 1:
-            indx = 0
-            for k, v in logLikeli.items():
-                if k == val:
-                    logLikeli[val] = v + 1
-                    indx = 1
-                    break
-            if indx == 0:
-                logLikeli[val] = 1
-
-        if piano == 1:
-            # music
+        # tablespoons word
+        if tablespoons == 1:
             indx = 0
             for k, v in logLikeli.items():
                 if k == val:
@@ -276,15 +284,44 @@ def sakeLogLiklihood(trainDict):
             if indx == 0:
                 logLikeli[val] = 1
 
+        if drink == 1:
+
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
+        if sauce == 1:
+
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
+        if cup == 1:
+
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
         # previous and after one words and pos
-        targetWindow = keyTokens[targetIndex - 1] + ' ' + 'bass'
-        targetWind = 'bass' + ' ' + keyTokens[targetIndex + 1]
+        targetWindow = keyTokens[targetIndex - 1] + ' ' + 'sake'
         posItem = nltk.pos_tag(keyTokens)
         posItem = [x[1] for x in posItem]
-        beforePos = posItem[targetIndex - 1]
-        afterPos = posItem[targetIndex + 1]
+        afterPos = posItem[targetIndex+1]+posItem[targetIndex + 2] # CCNN
+
         indx = 0
-        if targetWindow == 'play bass':
+        if targetWindow == 'japanese sake':
             for k, v in logLikeli.items():
                 if k == targetWindow:
                     indx = 1
@@ -292,62 +329,10 @@ def sakeLogLiklihood(trainDict):
                     break
             if indx == 0:
                 logLikeli[targetWindow] = 1
-        elif targetWindow == 'sea bass':
-            for k, v in logLikeli.items():
-                if k == targetWindow:
-                    indx = 1
-                    logLikeli[targetWindow] = v + 1
-                    break
-            if indx == 0:
-                logLikeli[targetWindow] = 1
-        elif targetWindow == 'on bass':
-            for k, v in logLikeli.items():
-                if k == targetWindow:
-                    indx = 1
-                    logLikeli[targetWindow] = v + 1
-                    break
-            if indx == 0:
-                logLikeli[targetWindow] = 1
-        elif targetWindow == 'striped bass':
-            for k, v in logLikeli.items():
-                if k == targetWindow:
-                    indx = 1
-                    logLikeli[targetWindow] = v + 1
-                    break
-            if indx == 0:
-                logLikeli[targetWindow] = 1
-        elif targetWindow == 'electric bass':
-            for k, v in logLikeli.items():
-                if k == targetWindow:
-                    indx = 1
-                    logLikeli[targetWindow] = v + 1
-                    break
-            if indx == 0:
-                logLikeli[targetWindow] = 1
-        elif targetWind == 'bass player':
-            for k, v in logLikeli.items():
-                if k == targetWind:
-                    indx = 1
 
-                    logLikeli[targetWind] = v + 1
-                    break
-            if indx == 0:
-                logLikeli[targetWind] = 1
-
-        elif beforePos == 'NN' or beforePos == 'DT' or beforePos == 'CC':
-            # Music
-            targetWord = beforePos + ' ' + 'bass'
-            for k, v in logLikeli.items():
-                if k == targetWord:
-                    indx = 1
-                    logLikeli[targetWord] = v + 1
-                    break
-            if indx == 0:
-                logLikeli[targetWord] = 1
-
-        elif afterPos == 'IN' or afterPos == 'VBG':
-            # fish
-            targetWord = 'bass' + ' ' + beforePos
+        elif afterPos == 'CCNN':
+            # beer
+            targetWord = afterPos
             for k, v in logLikeli.items():
                 if k == targetWord:
                     indx = 1
