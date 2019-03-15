@@ -1,8 +1,0 @@
-import nltk
-import re
-name='krishna where are you. Do I need to say it again?'
-a= re.search(r'where', name, re.M|re.I)
-b=nltk.FreqDist(name)
-if a:
-    print(name)
-    print(b.items())
