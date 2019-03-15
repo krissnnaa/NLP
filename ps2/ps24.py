@@ -3,6 +3,7 @@ import re
 import math
 from nltk.probability import FreqDist
 from nltk.wsd import lesk
+import sys
 import operator
 
 
@@ -26,13 +27,16 @@ def filePreprocessing(readTrain, test, name):
     trainFile = [x.strip() for x in readTrain]
     trainDict = {}
     trainList = []
+    scoreList=[]
     if name == 'bass':
         for line in trainFile:
             truncPart = line.split(':\t')
             if truncPart[0] == 'bass':
                 temp = 'music'
+                scoreList.append('music')
             else:
                 temp = 'fish'
+                scoreList.append('fish')
             truncPart[1] = re.sub(r'[^\w\s]', '', truncPart[1])
             lowerTrunc = truncPart[1].lower()
             trainDict[lowerTrunc] = temp
@@ -44,8 +48,10 @@ def filePreprocessing(readTrain, test, name):
             truncPart = line.split(':\t')
             if truncPart[0] == 'sake':
                 temp = 'cause'
+                scoreList.append('cause')
             else:
                 temp = 'beer'
+                scoreList.append('beer')
             truncPart[1] = re.sub(r'[^\w\s]', '', truncPart[1])
             lowerTrunc = truncPart[1].lower()
             trainDict[lowerTrunc] = temp
@@ -53,9 +59,9 @@ def filePreprocessing(readTrain, test, name):
                 trainList.append(lowerTrunc)
 
     if test == 1:
-        return trainDict, trainList
+        return trainDict, trainList,scoreList
     else:
-        return trainDict
+        return trainDict,scoreList
 
 
 def loglikelihoodComputation(trainDict):
@@ -81,7 +87,7 @@ def loglikelihoodComputation(trainDict):
                 break
             if val == 'bass':
                 targetIndex = keyTokens.index(val)
-                break
+
         # fish word
         if fish == 1:
             indx = 0
@@ -214,27 +220,51 @@ def sakeLogLiklihood(trainDict):
     logLikeli = {}
     for key, value in trainDict.items():
         keyTokens = nltk.word_tokenize(key)
-        #these are for cause
+        # these are for cause
         national = 0
         nation = 0
         children = 0
         unity = 0
-        country=0
-        stability=0
-        peace=0
-        people=0
-        #sake + IN =>INDERTERMINANAT
+        country = 0
+        stability = 0
+        peace = 0
+        people = 0
+        # sake + IN =>INDERTERMINANAT
         # these are for the beer
-        tablespoons=0
-        wine=0
-        cup=0
-        drink=0
-        bottle=0
-        sauce=0
-        #japanese +sake
-        #sake+NN => n+2 pos
+        tablespoons = 0
+        wine = 0
+        cup = 0
+        drink = 0
+        bottle = 0
+        sauce = 0
+        # japanese +sake
+        # sake+NN => n+2 pos
 
         for val in keyTokens:
+            if val == 'national':
+                national = 1
+                break
+            if val == 'nation':
+                nation = 1
+                break
+            if val == 'children':
+                children = 1
+                break
+            if val == 'unity':
+                unity = 1
+                break
+            if val == 'country':
+                country = 1
+                break
+            if val == 'stability':
+                stability = 1
+                break
+            if val == 'peace':
+                peace = 1
+                break
+            if val == 'people':
+                people = 1
+                break
             if val == 'wine':
                 wine = 1
                 break
@@ -252,7 +282,96 @@ def sakeLogLiklihood(trainDict):
                 break
             if val == 'sake':
                 targetIndex = keyTokens.index(val)
-                break
+
+
+        # national word
+        if national == 1:
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
+
+        # nation word
+        if nation == 1:
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
+
+        # country word
+        if country == 1:
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
+
+        # unity word
+        if unity == 1:
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
+
+        # stability word
+        if stability == 1:
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
+
+        # people word
+        if people == 1:
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
+
+        # children word
+        if children == 1:
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
+
+        # wine word
+        if peace == 1:
+            indx = 0
+            for k, v in logLikeli.items():
+                if k == val:
+                    logLikeli[val] = v + 1
+                    indx = 1
+                    break
+            if indx == 0:
+                logLikeli[val] = 1
+
         # wine word
         if wine == 1:
             indx = 0
@@ -318,10 +437,22 @@ def sakeLogLiklihood(trainDict):
         targetWindow = keyTokens[targetIndex - 1] + ' ' + 'sake'
         posItem = nltk.pos_tag(keyTokens)
         posItem = [x[1] for x in posItem]
-        afterPos = posItem[targetIndex+1]+posItem[targetIndex + 2] # CCNN
-
+        afterPos = posItem[targetIndex + 1] + posItem[targetIndex + 2]  # CCNN
+        afterOnePos = posItem[targetIndex + 1]
         indx = 0
-        if targetWindow == 'japanese sake':
+
+        if afterOnePos == 'IN':
+            # cause
+            targetWord = afterOnePos
+            for k, v in logLikeli.items():
+                if k == targetWord:
+                    indx = 1
+                    logLikeli[targetWord] = v + 1
+                    break
+            if indx == 0:
+                logLikeli[targetWord] = 1
+
+        elif targetWindow == 'japanese sake':
             for k, v in logLikeli.items():
                 if k == targetWindow:
                     indx = 1
@@ -344,6 +475,7 @@ def sakeLogLiklihood(trainDict):
         else:
             continue
 
+
     return logLikeli
 
 
@@ -360,41 +492,76 @@ def decisionListComputaion(logLikeli):
     finalDecisionList.append((finalList[0], 'music'))
     finalDecisionList.append((finalList[1], 'music'))
     finalDecisionList.append((finalList[2], 'fish'))
-    finalDecisionList.append((finalList[3], 'music'))
-    finalDecisionList.append((finalList[4], 'fish'))
-    finalDecisionList.append((finalList[5], 'fish'))
-    finalDecisionList.append((finalList[6], 'music'))
+    finalDecisionList.append((finalList[3], 'fish'))
+    finalDecisionList.append((finalList[4], 'music'))
+    finalDecisionList.append((finalList[5], 'music'))
+    finalDecisionList.append((finalList[6], 'fish'))
     finalDecisionList.append((finalList[7], 'music'))
-    finalDecisionList.append((finalList[8], 'music'))
-    finalDecisionList.append((finalList[9], 'fish'))
+    finalDecisionList.append((finalList[8], 'fish'))
+    finalDecisionList.append((finalList[9], 'music'))
     finalDecisionList.append((finalList[10], 'fish'))
-    finalDecisionList.append((finalList[11], 'fish'))
+    finalDecisionList.append((finalList[11], 'music'))
     finalDecisionList.append((finalList[12], 'music'))
-    finalDecisionList.append((finalList[13], 'music'))
-    finalDecisionList.append((finalList[14], 'fish'))
-    finalDecisionList.append((finalList[15], 'fish'))
-    finalDecisionList.append((finalList[16], 'fish'))
-    finalDecisionList.append((finalList[17], 'fish'))
-    finalDecisionList.append((finalList[18], 'music'))
-    finalDecisionList.append((finalList[19], 'fish'))
-    finalDecisionList.append((finalList[20], 'fish'))
+    finalDecisionList.append((finalList[13], 'fish'))
+    finalDecisionList.append((finalList[14], 'music'))
 
     return finalDecisionList
 
+def sakedecisionListComputaion(logLikeli):
+    # log likelihood for decision list
+
+    decisionList = {}
+    for key, value in logLikeli.items():
+        decisionList[key] = math.log10(value)
+
+    decisionList = sorted(decisionList.items(), key=lambda kv: kv[1], reverse=True)
+    finalList = [x[0] for x in decisionList]
+    finalDecisionList = []
+    finalDecisionList.append((finalList[0], 'cause'))
+    finalDecisionList.append((finalList[1], 'cause'))
+    finalDecisionList.append((finalList[2], 'cause'))
+    finalDecisionList.append((finalList[3], 'cause'))
+    finalDecisionList.append((finalList[4], 'cause'))
+    finalDecisionList.append((finalList[5], 'cause'))
+    finalDecisionList.append((finalList[6], 'cause'))
+    finalDecisionList.append((finalList[7], 'cause'))
+    finalDecisionList.append((finalList[8], 'cause'))
+    finalDecisionList.append((finalList[9], 'beer'))
+    finalDecisionList.append((finalList[10], 'beer'))
+    finalDecisionList.append((finalList[11], 'beer'))
+    finalDecisionList.append((finalList[12], 'beer'))
+    finalDecisionList.append((finalList[13], 'beer'))
+    finalDecisionList.append((finalList[14], 'beer'))
+    finalDecisionList.append((finalList[15], 'beer'))
+    return finalDecisionList
+
+
 
 if __name__ == '__main__':
-    name = 'sake'
-    baseLine = 0
-    # Training set
-    with open('C:/Users/CoCo Lab/PycharmProjects/NLP/NLP/ps2/bass_sake_train_test/sakeTrain.txt', 'r') as f:
-        readTrain = f.readlines()
-    preProcess = filePreprocessing(readTrain, 0, name)
-    # Testing set
-    with open('C:/Users/CoCo Lab/PycharmProjects/NLP/NLP/ps2/bass_sake_train_test/sakeTest.txt', 'r') as f:
-        readTest = f.readlines()
-    testDict, preProcessTest = filePreprocessing(readTest, 1, name)
+    trainFile=sys.argv[1]
+    trainFileS=str(trainFile)
+    testFile=sys.argv[2]
 
-    if baseLine == 1:
+    if trainFileS.startswith('bass')==True:
+        name='bass'
+    else:
+        name='sake'
+
+    # name='bass'
+    # trainFile='C:/Users/CoCo Lab/PycharmProjects/NLP/NLP/ps2/bassTrain.txt'
+    # testFile='C:/Users/CoCo Lab/PycharmProjects/NLP/NLP/ps2/bassTest.txt'
+    with open(trainFile, 'r') as f:
+        readTrain = f.readlines()
+    preProcess,scoreListT = filePreprocessing(readTrain, 0, name)
+    # Testing set
+    with open(testFile, 'r') as f:
+        readTest = f.readlines()
+    testDict, preProcessTest,scoreList = filePreprocessing(readTest, 1, name)
+
+    baseLine=input("\n If you want to run baseline (Lesk algorithm for WSD)then enter 1 else enter 0 to run Decision List =")
+
+
+    if baseLine == '1':
         i = 1
         outputList = []
         outputLabel = []
@@ -448,7 +615,7 @@ if __name__ == '__main__':
             print("\n\n========Sense Classification=======")
             print("Context" + '\t\t---->\t\t' + 'Sense\n\n')
 
-            count = 0
+            finalScore=[]
             for item in preProcessTest:
                 tokenItem = nltk.tokenize.word_tokenize(item)
                 posItem = nltk.pos_tag(tokenItem)
@@ -461,165 +628,26 @@ if __name__ == '__main__':
                 targetPos = posItem[wordIndex - 1] + ' ' + word
                 if targetPos == finalDecisionList[0][0]:
                     print(item + '--->' + finalDecisionList[0][1])
-                    count = count + 1
+                    finalScore.append('music')
                     continue
                 if targetPos == finalDecisionList[1][0]:
                     print(item + '--->' + finalDecisionList[1][1])
-                    count = count + 1
+                    finalScore.append('music')
                     continue
 
                 if targetWord == finalDecisionList[2][0]:
                     print(item + '--->' + finalDecisionList[2][1])
-                    count = count + 1
+                    finalScore.append('fish')
                     continue
-                targetWord = word + ' ' + tokenItem[wordIndex + 1]
+                targetWord = word + ' ' + posItem[wordIndex + 1]
                 if targetWord == finalDecisionList[3][0]:
                     print(item + '--->' + finalDecisionList[3][1])
-                    count = count + 1
+                    finalScore.append('fish')
                     continue
-                targetWord = tokenItem[wordIndex - 1] + ' ' + word
+                targetWord =  word + ' '+ tokenItem[wordIndex+1]
                 if targetWord == finalDecisionList[4][0]:
                     print(item + '--->' + finalDecisionList[4][1])
-                    count = count + 1
-                    continue
-                targetPos = word + ' ' + posItem[wordIndex + 1]
-                if targetPos == finalDecisionList[5][0]:
-                    print(item + '--->' + finalDecisionList[5][1])
-                    count = count + 1
-                    continue
-                targetPos = posItem[wordIndex - 1] + ' ' + word
-                if targetPos == finalDecisionList[6][0]:
-                    print(item + '--->' + finalDecisionList[6][1])
-                    count = count + 1
-                    continue
-                targetWord = tokenItem[wordIndex - 1] + ' ' + word
-                if targetWord == finalDecisionList[7][0]:
-                    print(item + '--->' + finalDecisionList[7][1])
-                    count = count + 1
-                    continue
-                indx = 0
-                for word in tokenItem:
-                    if word == finalDecisionList[8][0]:
-                        indx = 1
-                        break
-                if indx == 1:
-                    print(item + '--->' + finalDecisionList[8][1])
-                    count = count + 1
-                    continue
-                indx = 0
-                for word in tokenItem:
-                    if word == finalDecisionList[9][0]:
-                        indx = 1
-                        break
-                if indx == 1:
-                    print(item + '--->' + finalDecisionList[9][1])
-                    count = count + 1
-                    continue
-                targetPos = word + ' ' + posItem[wordIndex + 1]
-                if targetPos == finalDecisionList[10][0]:
-                    print(item + '--->' + finalDecisionList[10][1])
-                    count = count + 1
-                    continue
-
-                targetPos = word + ' ' + posItem[wordIndex + 1]
-                if targetPos == finalDecisionList[11][0]:
-                    print(item + '--->' + finalDecisionList[11][1])
-                    count = count + 1
-                    continue
-                indx = 0
-                for word in tokenItem:
-                    if word == finalDecisionList[12][0]:
-                        indx = 1
-                        break
-                if indx == 1:
-                    print(item + '--->' + finalDecisionList[12][1])
-                    count = count + 1
-                    continue
-                targetWord = tokenItem[wordIndex - 1] + ' ' + word
-                if targetWord == finalDecisionList[13][0]:
-                    print(item + '--->' + finalDecisionList[13][1])
-                    count = count + 1
-                    continue
-                targetPos = word + ' ' + posItem[wordIndex + 1]
-                if targetPos == finalDecisionList[14][0]:
-                    print(item + '--->' + finalDecisionList[14][1])
-                    count = count + 1
-                    continue
-                targetPos = word + ' ' + posItem[wordIndex + 1]
-                if targetPos == finalDecisionList[15][0]:
-                    print(item + '--->' + finalDecisionList[15][1])
-                    count = count + 1
-                    continue
-                targetPos = word + ' ' + posItem[wordIndex + 1]
-                if targetPos == finalDecisionList[16][0]:
-                    print(item + '--->' + finalDecisionList[16][1])
-                    count = count + 1
-                    continue
-                targetPos = word + ' ' + posItem[wordIndex + 1]
-                if targetPos == finalDecisionList[17][0]:
-                    print(item + '--->' + finalDecisionList[17][1])
-                    count = count + 1
-                    continue
-                targetWord = tokenItem[wordIndex - 1] + ' ' + word
-                if targetWord == finalDecisionList[18][0]:
-                    print(item + '--->' + finalDecisionList[18][1])
-                    count = count + 1
-                    continue
-                targetPos = word + ' ' + posItem[wordIndex + 1]
-                if targetPos == finalDecisionList[19][0]:
-                    print(item + '--->' + finalDecisionList[19][1])
-                    count = count + 1
-                    continue
-                targetPos = word + ' ' + posItem[wordIndex + 1]
-                if targetPos == finalDecisionList[20][0]:
-                    print(item + '--->' + finalDecisionList[20][1])
-                    count = count + 1
-                    continue
-            accuracy = count / 100
-            print("\nAccuracy of the Decision List for WSD of bass word in percentage = {:.1%}".format(accuracy))
-
-        else:
-
-            logLiklihood = loglikelihoodComputation(preProcess)
-            finalDecisionList = decisionListComputaion(logLiklihood)
-            print("\n\n========Decision List=======\n\n")
-            print(finalDecisionList)
-            print("\n\n========Sense Classification=======")
-            print("Context" + '\t\t---->\t\t' + 'Sense\n\n')
-
-            count = 0
-            for item in preProcessTest:
-                tokenItem = nltk.tokenize.word_tokenize(item)
-                for word in tokenItem:
-                    if word == 'bass':
-                        wordIndex = tokenItem.index(word)
-                        break
-                targetWord = tokenItem[wordIndex - 1] + ' ' + word
-
-                if targetWord == finalDecisionList[0][0]:
-                    print(item + '--->' + finalDecisionList[0][1])
-                    count = count + 1
-                    continue
-                if targetWord == finalDecisionList[1][0]:
-                    print(item + '--->' + finalDecisionList[1][1])
-                    count = count + 1
-                    continue
-                if targetWord == finalDecisionList[2][0]:
-                    print(item + '--->' + finalDecisionList[2][1])
-                    count = count + 1
-                    continue
-                if targetWord == finalDecisionList[3][0]:
-                    print(item + '--->' + finalDecisionList[3][1])
-                    count = count + 1
-                    continue
-                indx = 0
-                for word in tokenItem:
-                    if word == finalDecisionList[4][0]:
-                        indx = 1
-                        break
-                if indx == 1:
-                    print(item + '--->' + finalDecisionList[4][1])
-                    count = count + 1
+                    finalScore.append('music')
                     continue
                 indx = 0
                 for word in tokenItem:
@@ -628,15 +656,238 @@ if __name__ == '__main__':
                         break
                 if indx == 1:
                     print(item + '--->' + finalDecisionList[5][1])
-                    count = count + 1
+                    finalScore.append('music')
                     continue
-                if targetWord == finalDecisionList[6][0]:
+
+                targetPos = tokenItem[wordIndex - 1] + ' ' + word
+                if targetPos == finalDecisionList[6][0]:
                     print(item + '--->' + finalDecisionList[6][1])
-                    count = count + 1
+                    finalScore.append('fish')
                     continue
-                targetWord = 'bass' + ' ' + tokenItem[wordIndex + 1]
+                targetWord = posItem[wordIndex - 1] + ' ' + word
                 if targetWord == finalDecisionList[7][0]:
                     print(item + '--->' + finalDecisionList[7][1])
-                    count = count + 1
+                    finalScore.append('music')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[8][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[8][1])
+                    finalScore.append('fish')
+                    continue
+                targetWord = tokenItem[wordIndex - 1] + ' ' + word
+                if targetWord == finalDecisionList[9][0]:
+                    print(item + '--->' + finalDecisionList[9][1])
+                    finalScore.append('music')
+                    continue
+                targetPos = word + ' ' + posItem[wordIndex + 1]
+                if targetPos == finalDecisionList[10][0]:
+                    print(item + '--->' + finalDecisionList[10][1])
+                    finalScore.append('fish')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[11][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[11][1])
+                    finalScore.append('music')
+                    continue
+
+                targetWord = tokenItem[wordIndex - 1] + ' ' + word
+                if targetWord == finalDecisionList[12][0]:
+                    print(item + '--->' + finalDecisionList[12][1])
+                    finalScore.append('music')
+                    continue
+
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[13][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[13][1])
+                    finalScore.append('fish')
+                    continue
+                targetWord = tokenItem[wordIndex - 1] + ' ' + word
+                if targetWord == finalDecisionList[14][0]:
+                    print(item + '--->' + finalDecisionList[14][1])
+                    finalScore.append('music')
+                    continue
+            count=0
+            for val,value in zip(finalScore,scoreList):
+                if val==value:
+                    count=count+1
             accuracy = count / 100
+            print("\nAccuracy of the Decision List for WSD of bass word in percentage = {:.1%}".format(accuracy))
+
+        else:
+
+            logLiklihood = sakeLogLiklihood(preProcess)
+            finalDecisionList = sakedecisionListComputaion(logLiklihood)
+            print("\n\n========Decision List=======\n\n")
+            print(finalDecisionList)
+            print("\n\n========Sense Classification=======")
+            print("Context" + '\t\t---->\t\t' + 'Sense\n\n')
+
+            classifiedList=[]
+            for item in preProcessTest:
+                tokenItem = nltk.tokenize.word_tokenize(item)
+                wordIndex=0
+                for word in tokenItem:
+                    if word == 'bass':
+                        wordIndex = tokenItem.index(word)
+                        break
+                posTag=nltk.pos_tag(tokenItem)
+                posTag=[x[1] for x in posTag]
+                targetWord = posTag[wordIndex + 1]
+
+                if targetWord == finalDecisionList[0][0]:
+                    print(item + '--->' + finalDecisionList[0][1])
+                    classifiedList.append('cause')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[1][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[1][1])
+                    classifiedList.append('cause')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[2][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[2][1])
+                    classifiedList.append('cause')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[3][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[3][1])
+                    classifiedList.append('cause')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[4][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[4][1])
+                    classifiedList.append('cause')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[5][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[5][1])
+                    classifiedList.append('cause')
+                    continue
+
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[6][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[6][1])
+                    classifiedList.append('cause')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[7][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[7][1])
+                    classifiedList.append('cause')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[8][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[8][1])
+                    classifiedList.append('cause')
+                    continue
+
+                targetWord = posTag[wordIndex + 1]+posTag[wordIndex+2]
+                if targetWord == finalDecisionList[9][0]:
+                    print(item + '--->' + finalDecisionList[9][1])
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[10][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[10][1])
+                    classifiedList.append('beer')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[11][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[11][1])
+                    classifiedList.append('beer')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[12][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[12][1])
+                    classifiedList.append('beer')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[13][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[13][1])
+                    classifiedList.append('beer')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[14][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[14][1])
+                    classifiedList.append('beer')
+                    continue
+                indx = 0
+                for word in tokenItem:
+                    if word == finalDecisionList[15][0]:
+                        indx = 1
+                        break
+                if indx == 1:
+                    print(item + '--->' + finalDecisionList[15][1])
+                    classifiedList.append('beer')
+                    continue
+                print(item + '--->' + 'cause')
+                classifiedList.append('cause')
+            countFinal=0
+            for val,value in zip(classifiedList,scoreList):
+                    if val==value:
+                        countFinal=countFinal+1
+
+            accuracy = countFinal / 100
             print("\nAccuracy of the Decision List for WSD of sake word in percentage = {:.1%}".format(accuracy))
