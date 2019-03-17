@@ -599,13 +599,26 @@ if __name__ == '__main__':
                 outputLabel.append(value)
 
         count = 0
+        ifmusic=0
+        ifcause=0
+        iffish=0
+        ifbeer=0
         for val, value in zip(outputLabel, outputList):
             if val == value:
                 count = count + 1
+                if val=='music':
+                    ifmusic=ifmusic+1
+                if val=='cause':
+                    ifcause=ifcause+1
+            if value=='fish':
+                iffish=iffish+1
+            if value=='beer':
+                ifbeer=ifbeer+1
         accuracy = count / 100
 
         print("\nAccuracy of the Baseline in percentage = {:.1%}".format(accuracy))
-
+        print("\nmusic true match=%d \t cause true match=%d"%(ifmusic,ifcause))
+        print("\n total fish in testfile =%d \t total beer in testfile=%d"%(iffish,ifbeer))
     else:
         if name == 'bass':
             logLiklihood = loglikelihoodComputation(preProcess)
