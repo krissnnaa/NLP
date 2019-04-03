@@ -11,54 +11,14 @@ from sklearn import preprocessing
 
 
 def creatingFeatures(testFile):
-
     if testFile is not None:
         sourcePath = glob2.glob('/home/krishna/Downloads/termProject/test_data/**/source-tweet/*.json')
         sourcePath = list(set(sourcePath))
         with open('testFilePath.txt','w') as fd:
             for item in sourcePath:
                 fd.write('%s\n'%item)
-        with open('testfilePath.txt', 'r') as fd:
-            sourcePath=[l[:-1] for l in fd.readlines()]
-
-        testfeatureList = []
-        testsourceTweet = {}
-        for file in sourcePath:
-            innerFeature = []
-            innerSource = {}
-            with open(file, 'r') as fd:
-                jsonFile = json.load(fd)
-                tweetPost = jsonFile['text']
-                tweetID = jsonFile['id']
-                tokenWords = nltk.tokenize.word_tokenize(tweetPost)
-                tokenCount = len(tokenWords)
-                upperCount = 0
-                hashtag=0
-                url=0
-                for words in tokenWords:
-                    if words[0].isupper():
-                        upperCount = upperCount + 1
-                    if words=='#':
-                        hashtag=1
-                    if words.startswith('http'):
-                        url=1
-                innerFeature.append(hashtag)
-                innerFeature.append(url)
-                perUpper = upperCount / tokenCount
-                innerFeature.append(perUpper)
-                retweet = jsonFile['retweet_count']/1000
-                innerFeature.append(retweet)
-                if tokenWords[-1] == '?':
-                    questionMark = 1
-                else:
-                    questionMark = 0
-                innerFeature.append(questionMark)
-                favorite = jsonFile['favorite_count']/1000
-                innerFeature.append(favorite)
-                innerSource[tweetID] = innerFeature
-                testsourceTweet.update(innerSource)
-            testfeatureList.append(innerFeature)
-        return testsourceTweet
+        with open('testFilePath.txt', 'r') as fd:
+            sourcePath = [l[:-1] for l in fd.readlines()]
     else:
         sourcePath = glob2.glob('/home/krishna/Downloads/termProject/dataset/rumoureval-data/**/**/source-tweet/*.json')
         sourcePath = list(set(sourcePath))
@@ -67,44 +27,46 @@ def creatingFeatures(testFile):
                 fd.write('%s\n' %item)
         with open('trainFilePath.txt', 'r') as fd:
             sourcePath = [l[:-1] for l in fd.readlines()]
-        featureList=[]
-        sourceTweet={}
-        for file in sourcePath:
-            innerFeature=[]
-            innerSource={}
-            with open(file,'r') as fd:
-                jsonFile=json.load(fd)
-                tweetPost=jsonFile['text']
-                tweetID=jsonFile['id']
-                tokenWords=nltk.tokenize.word_tokenize(tweetPost)
-                tokenCount=len(tokenWords)
-                upperCount=0
-                hashtag=0
-                url=0
-                for words in tokenWords:
-                    if words[0].isupper():
-                        upperCount=upperCount+1
-                    if words=='#':
-                        hashtag=1
-                    if words.startswith('http'):
-                        url=1
-                innerFeature.append(hashtag)
-                innerFeature.append(url)
-                perUpper=upperCount/tokenCount
-                innerFeature.append(perUpper)
-                retweet=jsonFile['retweet_count']/1000
-                innerFeature.append(retweet)
-                if tokenWords[-1]=='?':
-                    questionMark=1
-                else:
-                    questionMark=0
-                innerFeature.append(questionMark)
-                favorite=jsonFile['favorite_count']/1000
-                innerFeature.append(favorite)
-                innerSource[tweetID]=innerFeature
-                sourceTweet.update(innerSource)
-            featureList.append(innerFeature)
-        return sourceTweet
+
+    featureList = []
+    sourceTweet = {}
+    
+    for file in sourcePath:
+        innerFeature = []
+        innerSource = {}
+        with open(file, 'r') as fd:
+            jsonFile = json.load(fd)
+            tweetPost = jsonFile['text']
+            tweetID = jsonFile['id']
+            tokenWords = nltk.tokenize.word_tokenize(tweetPost)
+            tokenCount = len(tokenWords)
+            upperCount = 0
+            hashtag = 0
+            url = 0
+            for words in tokenWords:
+                if words[0].isupper():
+                    upperCount = upperCount + 1
+                if words == '#':
+                    hashtag = 1
+                if words.startswith('http'):
+                    url = 1
+            innerFeature.append(hashtag)
+            innerFeature.append(url)
+            perUpper = upperCount / tokenCount
+            innerFeature.append(perUpper)
+            retweet = jsonFile['retweet_count'] / 1000
+            innerFeature.append(retweet)
+            if tokenWords[-1] == '?':
+                questionMark = 1
+            else:
+                questionMark = 0
+            innerFeature.append(questionMark)
+            favorite = jsonFile['favorite_count'] / 1000
+            innerFeature.append(favorite)
+            innerSource[tweetID] = innerFeature
+            sourceTweet.update(innerSource)
+        featureList.append(innerFeature)
+    return sourceTweet
 
 
 def logisticRegressionClassifier(X,y,x_test,y_test):
