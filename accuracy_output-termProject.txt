@@ -1,0 +1,18 @@
+[(0, 50), (1, 127), (2, 95)]
+[(0, 127), (1, 127), (2, 127)]
+Logistic accuracy score for dev set=0.36
+Logistic accuracy score for test set=0.43
+Naive Bayes accuracy score for dev set=0.28
+Naive Bayes accuracy score for test set=0.36
+Linear SVC accuracy score for dev set=0.36
+Linear SVC accuracy score for test set=0.36
+Ensemble Random Forest accuracy score for dev set=0.24
+Ensemble Random Forest  accuracy score for test set=0.54
+
+0) Preprocessing: Tokenzation of a tweet context
+1) features: hashtag in tweet, url in tweet, uppercase percentage, retweet_count, question_marks at the end of tweet and
+favorite_count
+2) Normalized them with min_max scalar 
+3) balance train dataset with oversampling
+4) model accuracy with score 
+
